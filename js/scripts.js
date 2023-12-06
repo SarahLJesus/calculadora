@@ -9,48 +9,48 @@ class Calculator {
         this.currentOperation = "";
     }
 
-    // add digit to calculator screen
+    // Adiciona digito a calculator screen
     addDigit(digit) {
-        //check if current operation already has a dot
+        // Verifica se a current operation já possiu um ponto
         if (digit === "." && this.currentOperationText.innerText.includes(".")) {
             return;
         }
 
-        this.currentOperation = digit;
+        this.currentOperation += digit;
         this.updateScreen();
     }
 
-    // Process all calculator operations
+    // Processa todas calculator operations
     processOperation(operation) {
-        //Check if current value is empty
+        // Checa se a current value é vazio
         if (this.currentOperationText.innerText === "" && operation !== "C") {
-            //Change operation
-            if (this.previousOperationText !== "") {
+            // Change operation
+            if (this.previousOperationText.innerText !== "") {
                 this.changeOperation(operation);
             }
             return;
         }
 
-        // Get current and previous value
+        // Obter o current and previous value
         let operationValue;
         const previous = +this.previousOperationText.innerText.split(" ")[0];
         const current = +this.currentOperationText.innerText;
 
         switch (operation) {
             case "+":
-                operationValue = previous + current
+                operationValue = previous + current;
                 this.updateScreen(operationValue, operation, current, previous);
                 break;
             case "-":
-                operationValue = previous - current
+                operationValue = previous - current;
                 this.updateScreen(operationValue, operation, current, previous);
                 break;
             case "/":
-                operationValue = previous / current
+                operationValue = previous / current;
                 this.updateScreen(operationValue, operation, current, previous);
                 break;
             case "*":
-                operationValue = previous * current
+                operationValue = previous * current;
                 this.updateScreen(operationValue, operation, current, previous);
                 break;
             case "DEL":
@@ -70,60 +70,61 @@ class Calculator {
         }
     }
 
-    // Change values of the calculator screen
+    // Muda values of the calculator screen
     updateScreen(
         operationValue = null,
         operation = null,
         current = null,
         previous = null
     ) {
-
         if (operationValue === null) {
-            this.currentOperationText.innerText += this.currentOperation;
+            this.currentOperationText.innerText = this.currentOperation;
         } else {
-            //check if value is zero, if it is dd current value
+            // Checa se o value é zero, se é adiciona o current value
             if (previous === 0) {
-                operationValue = current
+                operationValue = current;
             }
 
-            //Add current value to previous 
+            // Adiciona current value to previous 
             this.previousOperationText.innerText = `${operationValue} ${operation}`;
             this.currentOperationText.innerText = "";
         }
     }
-    // Change math operation
-    changeOperation(operation) {
 
-        const mathOperations = ["*", "/", "+", "-"]
+    // Muda a math operation
+    changeOperation(operation) {
+        const mathOperations = ["*", "/", "+", "-"];
 
         if (!mathOperations.includes(operation)) {
-            return
+            return;
         }
 
         this.previousOperationText.innerText =
             this.previousOperationText.innerText.slice(0, -1) + operation;
     }
 
-    // Delete the last digit
+    // Deleta o último digit
     processDelOperator() {
-        this.currentOperationText.innerText =
-            this.currentOperationText.innerText.slice(0, -1);
+        this.currentOperation = this.currentOperation.slice(0, -1);
+        this.updateScreen();
     }
 
-    //Clear current operation
+    // Limpa a current operation
     processClearCurrentOperation() {
         this.currentOperationText.innerText = "";
+        this.currentOperation = "";
     }
-    // Clear all operations
+
+    // Limpa todas as operations
     processClearAllOperation() {
         this.currentOperationText.innerText = "";
         this.previousOperationText.innerText = "";
+        this.currentOperation = "";
     }
 
-    // Process an operation
+    // Processa an operation
     processEqualsOperator() {
-        const operation = previousOperationText.innerText.split(" ")[1]
-
+        const operation = previousOperationText.innerText.split(" ")[1];
         this.processOperation(operation);
     }
 }
@@ -140,4 +141,16 @@ buttons.forEach((btn) => {
             calc.processOperation(value);
         }
     });
+});
+
+// Adiciona um event listener para capturar eventos de teclado
+document.addEventListener(`keydown`, function (event) {
+    const key = event.key;
+
+    // Verifica se a tecla pressionada é um número ou operador
+    if ((+key >= 0 && +key <= 9) || key === '.') {
+        calc.addDigit(key);
+    } else {
+        calc.processOperation(key);
+    }
 });
